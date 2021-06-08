@@ -9,11 +9,12 @@ The project in this repository is just a recrated "F1" board making use of the b
 - It has a pass-through header for powering the drive (5v only). An external 5v/12v PSU is required only for drives requiring 12v or power hungry ones.
 - It uses SMD stuff (maybe harder to solder)
 - It is designed using the KiCAD EDA
+- It is updated to support the DISKCHANGE signal for the (actually exeprimental) WinUAE floppy support by RobSmith
 - It does not have the "F7" features like double drive support
 
-I guess it is not better than the original "F7" board, just different for those who prefer the more common STM32F103 chip.
+I guess it is not better than the original boards, just different for those who prefer tiny stuff.
 
-For the software part, it works with the original "F1" firmware and tool.
+For the software part, it works with the original "F1" firmware and tool, but for the time being small modifications are required to use the DISKCHANGE feature with WinUAE.
 
 # Disclaimer
 This is a hobbyist project, it comes with no warranty and no support.
@@ -26,12 +27,13 @@ If you find it useful, please reward the original author.
 
 # BOM
 - 1x STM32F103C8T6 or CS32F103C8T6
-- 1x SPX3819M5-L-3-3 3.3v LDO
+- 1x 3.3v LDO, either SPX3819M5-L-3-3 or XC6206P332MR
 - 1x 8MHz HC-49 crystal
-- 2x 1uF (or more) 0805 capacitors
+- 2x 1uF 0805 capacitors
 - 3x 100nF 0805 capacitors
 - 2x 22pf 0805 capacitors
 - 2x 22 ohm 0805 resistors
+- 1x 1K 0805 resistor
 - 1x 10K 0805 resistor
 - 1x 100K 0805 resistor (to reduce the BOM you can use a 10k)
 - 1x 1K 0603x4 resistor array
@@ -45,11 +47,13 @@ Check for shorts at least between 5V, 3.3V, and GND traces before applying power
 
 The programming port does not need to be soldered since it needs to be programmed just once : you can just hold it in place during the few seconds required for programming.
 
-To program the uC, I personaly use a STLINK clone dongle with the stlink tool : https://github.com/stlink-org/stlink
+For the software part, it works with the original "F1" firmware and tool with ID pads left open. For the time being a modification is required to use the DISKCHANGE feature with WinUAE since it needs to be detected as a "Plus" version : in src/mcu/stm32f1/board.c, replace the F1SM\_plus \_board\_config with the values from the F1SM\_basic one, then after flashing close the ID0(1) pads.
+
+To program the uC, I personally use a STLINK clone dongle with the stlink tool : https://github.com/stlink-org/stlink
 ```
 st-flash --format ihex write Greaseweazle-F1-v0.??.hex
 ```
-To update through the USB cable, bridge CK (4) and GND (1) on the programming port before connecting the USB cable, then enter
+To update through the USB cable, bridge CK and GND on the programming port before connecting the USB cable, then enter
 ```
 Greaseweazle/gw update
 ```
@@ -64,4 +68,6 @@ Greaseweazle/gw update
 Greaseweazle/gw read mydisk.scp
 Greaseweazle/gw write mydisk.scp
 ```
+
+With winUAE : http://amiga.robsmithdev.co.uk/winuae
 
